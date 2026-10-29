@@ -1,0 +1,35 @@
+---
+// Top navigation. The active link is highlighted based on the current path.
+const { pathname } = Astro.url;
+
+interface NavLink {
+  href: string;
+  label: string;
+  match: (path: string) => boolean;
+}
+
+const links: NavLink[] = [
+  { href: '/work', label: 'Work', match: (p) => p.startsWith('/work') },
+  { href: '/writing', label: 'Writing', match: (p) => p.startsWith('/writing') },
+  { href: '/about', label: 'About', match: (p) => p === '/about' || p === '/about/' },
+  { href: 'mailto:ifeyibatindek@gmail.com', label: 'Contact', match: () => false }
+];
+---
+
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a class="topnav-name" href="/">
+      <span class="dot"></span>Ifeyi Batindek
+    </a>
+    <ul class="topnav-links">
+      {links.map((l) => (
+        <li>
+          <a
+            href={l.href}
+            class={l.match(pathname) ? 'active' : ''}
+          >{l.label}</a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>

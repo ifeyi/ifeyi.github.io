@@ -1,0 +1,39 @@
+---
+import Base from '~/layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('essays', ({ data }) => !data.draft);
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry }
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const dateStr = d.pubDate.toLocaleString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+---
+
+<Base title={`${d.title} — Ifeyi Batindek`} description={d.description}>
+  <section class="wrap-prose">
+    <header class="article-head">
+      <span class="kicker">{dateStr}{d.readingTime ? ` · ${d.readingTime}` : ''}</span>
+      <h1>{d.title}</h1>
+      {d.subtitle && <p class="subtitle">{d.subtitle}</p>}
+    </header>
+
+    <article class="prose">
+      <Content />
+    </article>
+
+    <nav style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--rule);">
+      <a href="/writing" class="cta secondary">← All writing</a>
+    </nav>
+  </section>
+</Base>

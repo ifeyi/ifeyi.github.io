@@ -1,0 +1,17 @@
+---
+interface Props {
+  href: string;
+  kicker: string;
+  title: string;
+  excerpt: string;
+  feature?: boolean;
+}
+
+const { href, kicker, title, excerpt, feature = false } = Astro.props;
+---
+
+<a class={feature ? 'work-card feature' : 'work-card'} href={href}>
+  <div class="card-meta kicker">{kicker}</div>
+  <h3>{title}</h3>
+  <p>{excerpt}</p>
+</a>

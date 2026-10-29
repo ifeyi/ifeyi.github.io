@@ -1,0 +1,31 @@
+---
+import Base from '~/layouts/Base.astro';
+import EssayCard from '~/components/EssayCard.astro';
+import { getCollection } from 'astro:content';
+
+const allEssays = (await getCollection('essays', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+---
+
+<Base title="Writing — Ifeyi Batindek">
+  <section class="wrap-prose">
+    <header class="page-head">
+      <h1>Writing</h1>
+      <p class="subtitle">Essays and notes on AI governance, digital sovereignty, banking modernization, and the political economy of the technologies we adopt.</p>
+    </header>
+
+    <div class="writing-list">
+      {allEssays.map((e) => {
+        const meta = `${e.data.pubDate.toLocaleString('en-US', { month: 'long', year: 'numeric' })}${e.data.readingTime ? ` · ${e.data.readingTime}` : ''}`;
+        return (
+          <EssayCard
+            href={`/writing/${e.id}`}
+            meta={meta}
+            title={e.data.title}
+            description={e.data.subtitle ?? e.data.description}
+          />
+        );
+      })}
+    </div>
+  </section>
+</Base>

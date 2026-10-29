@@ -1,0 +1,75 @@
+---
+import Base from '~/layouts/Base.astro';
+import WorkCard from '~/components/WorkCard.astro';
+import EssayCard from '~/components/EssayCard.astro';
+import { getCollection } from 'astro:content';
+
+// Pull work and essays, filter drafts, order them.
+const allWork = (await getCollection('work', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order);
+
+const allEssays = (await getCollection('essays', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const featured = allWork.find((w) => w.data.featured) ?? allWork[0];
+const others = allWork.filter((w) => w.id !== featured.id);
+---
+
+<Base title="Ifeyi Batindek — Architect & Writer">
+  <section class="wrap">
+    <header class="hero">
+      <div class="kicker" style="margin-bottom: 1.2rem;">Architect · Cameroon · Available May 2026</div>
+      <h1>Modernizing core banking and shipping <span class="accent">grounded AI</span> in regulated environments.</h1>
+      <p class="lede">I lead the migration of a national core banking platform to microservices, build production data pipelines, and prototype RAG systems for regulated banking documentation. Ten years of architecture practice. Now turning toward AI delivery in environments where the constraints define the design.</p>
+      <a class="cta" href="/work">View work →</a>
+      <a class="cta secondary" href="/writing">Read writing</a>
+    </header>
+
+    <section id="work">
+      <h2 class="section-head"><span class="h2-counter">01</span>Selected work</h2>
+      <div class="work-grid">
+        {featured && (
+          <WorkCard
+            href={`/work/${featured.id}`}
+            kicker={featured.data.kicker}
+            title={featured.data.title}
+            excerpt={featured.data.excerpt}
+            feature={true}
+          />
+        )}
+        {others.slice(0, 4).map((w) => (
+          <WorkCard
+            href={`/work/${w.id}`}
+            kicker={w.data.kicker}
+            title={w.data.title}
+            excerpt={w.data.summary}
+          />
+        ))}
+      </div>
+    </section>
+
+    <section id="writing">
+      <h2 class="section-head"><span class="h2-counter">02</span>Writing</h2>
+      <div class="writing-list">
+        {allEssays.slice(0, 3).map((e) => {
+          const meta = `${e.data.pubDate.toLocaleString('en-US', { month: 'long', year: 'numeric' })}${e.data.readingTime ? ` · ${e.data.readingTime}` : ''}`;
+          return (
+            <EssayCard
+              href={`/writing/${e.id}`}
+              meta={meta}
+              title={e.data.title}
+              description={e.data.subtitle ?? e.data.description}
+            />
+          );
+        })}
+      </div>
+    </section>
+
+    <section id="about-preview">
+      <h2 class="section-head"><span class="h2-counter">03</span>About</h2>
+      <p style="max-width: 60ch; margin-bottom: 1rem; font-size: 1rem;">Enterprise architect, ten years in regulated environments. Currently leading core banking modernization at Crédit Foncier du Cameroun. Building a small body of public work on grounded GenAI and a written practice on AI governance and digital sovereignty.</p>
+      <p style="max-width: 60ch; color: var(--grey-mid); font-size: 1rem; margin-bottom: 1.4rem;">Available for senior architecture roles in Europe or remote. French (native), English (professional). Working toward AWS, TOGAF, PRINCE2, PMP in 2026.</p>
+      <a class="cta secondary" href="/about">Read more →</a>
+    </section>
+  </section>
+</Base>

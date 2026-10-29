@@ -1,0 +1,62 @@
+---
+import Base from '~/layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('work', ({ data }) => !data.draft);
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry }
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const ogImage = d.cover ? `/images/${entry.id}/og.jpg` : undefined;
+---
+
+<Base title={`${d.title} — Ifeyi Batindek`} description={d.summary} ogImage={ogImage}>
+  {d.cover && (
+    <figure class="case-cover">
+      <img src={d.cover} alt={d.title} loading="eager" />
+    </figure>
+  )}
+  <section class="wrap-prose">
+    <header class="article-head">
+      <span class="kicker">{d.kicker}</span>
+      <h1>{d.title}</h1>
+      <p class="subtitle">{d.summary}</p>
+      <dl class="meta-row">
+        {d.client && (
+          <div>
+            <dt>Client</dt>
+            <dd>{d.client}</dd>
+          </div>
+        )}
+        <div>
+          <dt>Role</dt>
+          <dd>{d.role}</dd>
+        </div>
+        <div>
+          <dt>Period</dt>
+          <dd>{d.period}</dd>
+        </div>
+        {d.tags.length > 0 && (
+          <div>
+            <dt>Tags</dt>
+            <dd>{d.tags.join(', ')}</dd>
+          </div>
+        )}
+      </dl>
+    </header>
+
+    <article class="prose">
+      <Content />
+    </article>
+
+    <nav style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--rule);">
+      <a href="/work" class="cta secondary">← All work</a>
+    </nav>
+  </section>
+</Base>

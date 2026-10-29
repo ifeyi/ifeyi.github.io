@@ -1,0 +1,16 @@
+---
+interface Props {
+  href: string;
+  meta: string;             // e.g. "May 2026 · 8 min read"
+  title: string;
+  description: string;
+}
+
+const { href, meta, title, description } = Astro.props;
+---
+
+<a class="writing-item" href={href}>
+  <div class="meta kicker">{meta}</div>
+  <h3>{title}</h3>
+  <p>{description}</p>
+</a>

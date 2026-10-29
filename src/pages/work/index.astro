@@ -1,0 +1,28 @@
+---
+import Base from '~/layouts/Base.astro';
+import WorkCard from '~/components/WorkCard.astro';
+import { getCollection } from 'astro:content';
+
+const allWork = (await getCollection('work', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base title="Work — Ifeyi Batindek">
+  <section class="wrap">
+    <header class="page-head">
+      <h1>Work</h1>
+      <p class="subtitle">Selected projects across banking architecture, strategy, brand, and product. Each entry is written as a case study — what the brief was, what I did, what came of it.</p>
+    </header>
+
+    <div class="work-grid">
+      {allWork.map((w) => (
+        <WorkCard
+          href={`/work/${w.id}`}
+          kicker={w.data.kicker}
+          title={w.data.title}
+          excerpt={w.data.summary}
+        />
+      ))}
+    </div>
+  </section>
+</Base>
